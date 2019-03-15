@@ -11,7 +11,7 @@ link_directories(librarys/ffmpeg/)
 set(SOURCE_FILES
 
         main.cpp
-        )
+        src/chapter_05/avformatuse.h)
 
 
 add_executable(LearnFFmpeg
