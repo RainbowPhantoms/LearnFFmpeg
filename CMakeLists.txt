@@ -71,7 +71,7 @@ link_directories(${PROJECT_SOURCE_DIR}/librarys/)
 set(SOURCE_FILES
         main.cpp
         src/chapter_05/avformatuse.h
-        src/chapter_06/sdl_video.h)
+        src/chapter_06/sdl_video.h src/chapter_07/sdl_audio.h)
 
 
 add_executable(LearnFFmpeg

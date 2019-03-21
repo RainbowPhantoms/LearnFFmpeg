@@ -2,15 +2,20 @@
 // Created by MirsFang on 2019-03-15.
 //
 
+namespace sdl_video {
 #include <iostream>
 
 extern "C" {
+
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 #include <libavutil/avutil.h>
+#include <SDL2/SDL.h>
+
 }
 
 using namespace std;
+
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 720
@@ -28,6 +33,7 @@ AVCodec *codec;
 AVPacket *packet;
 AVFrame *frame;
 int videoIndex = -1;
+double displayTimeUs = 0;
 
 
 /** 初始化SDL2 **/
@@ -69,7 +75,8 @@ void initSDL2() {
     //创建Render
     render = SDL_CreateRenderer(window, -1, 0);
     //创建Texture
-    texture = SDL_CreateTexture(render, SDL_PIXELFORMAT_IYUV, SDL_TEXTUREACCESS_STREAMING, WINDOW_WIDTH, WINDOW_HEIGHT);
+    texture = SDL_CreateTexture(render, SDL_PIXELFORMAT_IYUV, SDL_TEXTUREACCESS_STREAMING, WINDOW_WIDTH,
+                                WINDOW_HEIGHT);
 
     rect.x = 0;
     rect.y = 0;
@@ -140,12 +147,23 @@ void preparDecodec(const char *url) {
 /** 解码数据 **/
 void decodecFrame() {
     int sendcode = 0;
+
+    //计算帧率
+    double frameRate = av_q2d(formatContext->streams[videoIndex]->avg_frame_rate);
+    //计算显示的时间
+    displayTimeUs = 1 * 1000 / frameRate;
+
+    //读取包
     while (av_read_frame(formatContext, packet) == 0) {
         if (packet->stream_index != videoIndex)continue;
+        //接受解码后的帧数据
         while (avcodec_receive_frame(codecContext, frame) == 0) {
+            //绘制图像
             drawFrame(frame);
         }
+        //发送解码前的包数据
         sendcode = avcodec_send_packet(codecContext, packet);
+        //根据发送的返回值判断状态
         if (sendcode == 0) {
             cout << "[debug] " << "SUCCESS" << endl;
         } else if (sendcode == AVERROR_EOF) {
@@ -155,6 +173,7 @@ void decodecFrame() {
         } else {
             cout << "[debug] " << av_err2str(AVERROR(sendcode)) << endl;
         }
+        av_packet_unref(packet);
     }
 
 }
@@ -181,6 +200,7 @@ void drawFrame(AVFrame *frame) {
     SDL_RenderClear(render);
     SDL_RenderCopy(render, texture, NULL, &rect);
     SDL_RenderPresent(render);
+    SDL_Delay(displayTimeUs);
 }
 
 /** 播放视频 **/
@@ -189,4 +209,5 @@ void playVideo(const char *url) {
     preparDecodec(url);
     decodecFrame();
     freeContext();
+}
 }

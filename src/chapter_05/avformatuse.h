@@ -1,7 +1,7 @@
 //
 // Created by MirsFang on 2019-03-13.
 //
-
+namespace extract_video{
 #include <iostream>
 
 extern "C" {
@@ -215,5 +215,6 @@ void chapter05_h264_01(const char *url) {
     av_bsf_free(&ctx);
     //关闭文件流
     fclose(output);
+}
 }
 

@@ -10,11 +10,14 @@ extern "C" {
 
 #include "src/chapter_05/avformatuse.h"
 #include "src/chapter_06/sdl_video.h"
+#include "src/chapter_07/sdl_audio.h"
 
 /** 第五章的例子 分离H264 **/
 //#define chapter_05
 /** 第六章 SDL2播放视频 **/
-#define chapter_06
+//#define chapter_06
+/** 第七章 SDL2播放音频 **/
+#define chapter_07
 
 using namespace std;
 
@@ -29,16 +32,22 @@ int main() {
 /** 第五章例子 **/
 #ifdef chapter_05
     //分离H264
-    chapter05_h264(url);
-    chapter05_h264_01(httpUrl);
+   extract_video::chapter05_h264(url);
+   extract_video::chapter05_h264_01(httpUrl);
 #endif
 
 /** 第六章例子 **/
 #ifdef chapter_06
 
-    playVideo(url);
+    sdl_video::playVideo(url);
+#endif
+
+#ifdef chapter_07
+
+   sdl_audio::playAudio(url);
 
 #endif
+
 
 
     return 0;
